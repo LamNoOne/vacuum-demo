@@ -2,14 +2,14 @@ import heapq
 
 
 def heuristic(a, b):
-    """Tính toán khoảng cách Manhattan giữa hai điểm a và b"""
+    # Calculate the Manhattan distance between two points
     (x1, y1) = a
     (x2, y2) = b
     return abs(x1 - x2) + abs(y1 - y2)
 
 
 def a_star_search(matrix, start, goal):
-    """Thuật toán A* tìm đường đi ngắn nhất từ start đến goal"""
+    ## Thuật toán A* tìm đường đi ngắn nhất từ start đến goal
     neighbors = [
         (0, 1),
         (1, 0),
@@ -66,7 +66,7 @@ def a_star_search(matrix, start, goal):
 
 
 def find_closest_goal(current_position, goals):
-    """Tìm goal gần nhất với vị trí hiện tại"""
+    # Find the closest goal from the current position
     closest_goal = None
     min_distance = float("inf")
     for goal in goals:
@@ -78,39 +78,31 @@ def find_closest_goal(current_position, goals):
 
 
 def find_path_to_closest_goal(matrix, start, goals):
-    """Tìm đường đi đến goal gần nhất"""
+    # Find the path to the closest goal from the current position
     path = []
     current_position = start
-
     while goals:
-        print("current_position: ", current_position)
         closest_goal = find_closest_goal(current_position, goals)
-        print("closest_goal: ", closest_goal)
         path_to_goal = a_star_search(matrix, current_position, closest_goal)
-        print("path_to_goal: ", path_to_goal)
         if path_to_goal:
             path.extend(path_to_goal)
             current_position = closest_goal
             goals.remove(closest_goal)
         else:
-            # Nếu không tìm thấy đường đến goal gần nhất, hãy chọn một goal khác
+            # If the path to the closest goal is not found, choose another goal
             goals.remove(closest_goal)
-
     return path
 
 
-# Sử dụng:
-# goals = [(4, 4), (2, 2), (3, 3)]  # Danh sách các vị trí hạt bụi
+# Usage example:
 
-
-# Ví dụ sử dụng:
-# matrix = [[0, 0, 0, 0, 0],  # 0 là đường đi, 1 là vật cản
+# matrix = [[0, 0, 0, 0, 0],
 #           [0, 1, 1, 1, 0],
 #           [0, 0, 0, 0, 0],
 #           [0, 1, 1, 1, 0],
 #           [0, 0, 0, 0, 0]]
 
-# start = (0, 0)  # Vị trí xuất phát
-# goals = [(4, 4), (2, 2), (4, 1)]   # Vị trí đích
+# start = (0, 0)
+# goals = [(4, 4), (2, 2), (4, 1)]
 # path_to_goals = find_path_to_closest_goal(matrix, start, goals)
 # print(path_to_goals)

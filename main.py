@@ -249,22 +249,22 @@ def run_application():
 
     label_font = CTkFont(family="Arial", size=14)
 
-    column_label = ctk.CTkLabel(info_frame, text="Nhập số cột:", font=label_font)
+    column_label = ctk.CTkLabel(info_frame, text="Enter the number of column:", font=label_font)
     column_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")
     column_entry = ctk.CTkEntry(info_frame, font=label_font)
     column_entry.grid(row=0, column=1, padx=10, pady=10)
 
-    row_label = ctk.CTkLabel(info_frame, text="Nhập số hàng:", font=label_font)
+    row_label = ctk.CTkLabel(info_frame, text="Enter the number of row:", font=label_font)
     row_label.grid(row=1, column=0, padx=10, pady=10, sticky="w")
     row_entry = ctk.CTkEntry(info_frame, font=label_font)
     row_entry.grid(row=1, column=1, padx=10, pady=10)
 
-    obstacle_label = ctk.CTkLabel(info_frame, text="Nhập số vật cản:", font=label_font)
+    obstacle_label = ctk.CTkLabel(info_frame, text="Enter the number of obstacle:", font=label_font)
     obstacle_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
     obstacle_entry = ctk.CTkEntry(info_frame, font=label_font)
     obstacle_entry.grid(row=2, column=1, padx=10, pady=10)
 
-    dust_row_label = ctk.CTkLabel(info_frame, text="Nhập số bụi:", font=label_font)
+    dust_row_label = ctk.CTkLabel(info_frame, text="Enter the number of dust:", font=label_font)
     dust_row_label.grid(row=3, column=0, padx=10, pady=10, sticky="w")
     dust_entry = ctk.CTkEntry(info_frame, font=label_font)
     dust_entry.grid(row=3, column=1, padx=10, pady=10)
