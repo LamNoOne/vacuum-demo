@@ -111,6 +111,6 @@ def find_path_to_closest_goal(matrix, start, goals):
 #           [0, 0, 0, 0, 0]]
 
 # start = (0, 0)  # Vị trí xuất phát
-# goals = [(4, 4), (2, 2), (3, 4)]   # Vị trí đích
+# goals = [(4, 4), (2, 2), (4, 1)]   # Vị trí đích
 # path_to_goals = find_path_to_closest_goal(matrix, start, goals)
 # print(path_to_goals)

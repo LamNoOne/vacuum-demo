@@ -23,7 +23,7 @@ def move(r, c):
                 que[r][c] = [r + i[0], c + i[1], que[r+i[0]][c+i[1]][2] + 1]
         
       
-def initialize_dfs1(ta, st, dust):
+def initialize_dfs(ta, st, dust):
     global row, col, num_cols, num_rows, table, step, near, que, dus
     dus = dust
     row = st[0]

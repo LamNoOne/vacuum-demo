@@ -8,24 +8,29 @@ def check(r, c):
         return True
     else:
         return False
+    
 
-def move(r, c):       
-    global que, dus, table, near
-    if(r == dus[0] and c == dus[1]):
-        step.append([r, c])
-        return True
+def print_table():
+    global table
+    print()
+    for i in table:
+        print(*i)
+
+def move(r, c):
+    global near, table, mark, step
+    step.append([r, c])
+    j = 0
     for i in near:
         if(check(r + i[0], c + i[1])):
-            table[r + i[0]][c + i[1]] = 'S'     
-            if(move(r + i[0], c + i[1])):
-                step.append([r, c])
-                return True
-    return False
-        
+            table[r + i[0]][c + i[1]] = mark[j]
+            move(r + i[0], c + i[1])
+            table[r + i[0]][c + i[1]] = mark[(j + 2) % 4]
+
+            step.append([r, c])
+        j += 1
       
-def initialize_dfs(ta, st, dust):
-    global row, col, num_cols, num_rows, table, step, near, mark, que, dus
-    dus = dust
+def initialize_dfs_full(ta, st):
+    global row, col, num_cols, num_rows, table, step, near, mark
     row = st[0]
     col = st[1]
     num_rows = len(ta)
@@ -42,9 +47,7 @@ def initialize_dfs(ta, st, dust):
             else:
                 tmp.append('.')
         table.append(tmp)
-    que = []
-    # que.append([row, col, -1])
+        
     move(row, col)
     # print_table()
-    step.reverse()
     return step

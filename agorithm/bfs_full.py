@@ -49,7 +49,7 @@ def move(sta, dus):
         p += 1
         
       
-def initialize_B1(ta, st):
+def initialize_bfs_full(ta, st):
     global row, col, num_cols, num_rows, table, step, near, mark
 
     row = st[0]
@@ -75,6 +75,6 @@ def initialize_B1(ta, st):
                 move(st, [i, j])
                 st = [i, j]
     # print_table()
-    # step.reverse()
     # print(step)
+    # step.reverse()
     return step
