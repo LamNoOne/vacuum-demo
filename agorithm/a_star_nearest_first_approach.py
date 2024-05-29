@@ -53,10 +53,10 @@ def a_star_search(matrix, start, goal):
                 # Nằm ngoài phạm vi bản đồ
                 continue
 
-            if neighbor in close_set:
+            if neighbor in close_set and tentative_g_score >= gscore.get(neighbor, 0):
                 continue
-
-            if neighbor not in [i[1] for i in oheap]:
+            
+            if tentative_g_score < gscore.get(neighbor, 0) or neighbor not in [i[1]for i in oheap]:
                 came_from[neighbor] = current
                 gscore[neighbor] = tentative_g_score
                 fscore[neighbor] = tentative_g_score + heuristic(neighbor, goal)

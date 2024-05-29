@@ -11,10 +11,10 @@ from agorithm.bfs import *
 from agorithm.bfs_full import *
 from agorithm.dfs import *
 from agorithm.dfs_full import *
+# Global variables to store frame table container, vacuum position, dust positions, and the result matrix
 result = None
 dust_positon = None
-table_frame = None  # Biến toàn cục để lưu trữ frame chứa bảng
-
+table_frame = None
 
 def random_matrix (num_rows, num_cols,num_obs,num_dust):
 
@@ -22,12 +22,14 @@ def random_matrix (num_rows, num_cols,num_obs,num_dust):
 
     obs_position = random.sample(range(num_rows*num_cols),num_obs)
     for pos in obs_position:
-        arr[pos] = 1        #1 đại diện cho vật cản
+        # Present as an obstacle, value 1 in matrix will be ignore
+        arr[pos] = 1
 
     empty_positions = [i for i, x in enumerate(arr) if x == 0]
 
     dust_and_vacuum_positions = random.sample(empty_positions, num_dust + 1)
-    vacuum_position = dust_and_vacuum_positions.pop()  # Lấy vị trí cuối cùng cho máy hút bụi
+    # Get the last position as the vacuum position
+    vacuum_position = dust_and_vacuum_positions.pop()
     for pos in dust_and_vacuum_positions:
         arr[pos] = 2
 
@@ -45,8 +47,10 @@ def create_table():
     kt = 0
     num_rows = row_entry.get()
     num_cols = column_entry.get()
-    num_obs =  obstacle_entry.get()  # Số lượng vật cản
-    num_dust = dust_entry.get() # Số lượng bụi
+    # Get the number of obstacles
+    num_obs =  obstacle_entry.get()
+    # Get the number of dust
+    num_dust = dust_entry.get()
 
     if not num_rows or not num_cols or not num_obs or not num_dust:
         messagebox.showerror("Thông báo lỗi", "Vui lòng nhập đủ thông tin hàng, cột, số lượng bụi và số lượng vật cản!")
@@ -59,8 +63,8 @@ def create_table():
     result = random_matrix(num_rows, num_cols, num_obs, num_dust)
     obstacle_positions = {(i, j) for i in range(num_rows) for j in range(num_cols) if result['matrix'][i][j] == 1}
     dust_positions = {(i, j) for i in range(num_rows) for j in range(num_cols) if result['matrix'][i][j] == 2}
-    vacuum_pos = result['start_position']  # Vị trí của máy hút bụi
-    #print("vi tri bat dau"+str(result['start_position']))
+    # Get the vacuum position
+    vacuum_pos = result['start_position']
     if table_frame:
         clear_table()
 
@@ -98,7 +102,7 @@ def create_table():
             cell_label.bind('<Button-3>', lambda onRightClick, row=i, col=j: up_virus(row, col))
 
 def update_cell(row, col, image):
-    # Tìm widget Label tương ứng và cập nhật hình ảnh
+    # Find the corresponding Label widget and update the image
     cell_label = table_frame.grid_slaves(row=row, column=col)[0]
     cell_label.configure(image=image)
 
@@ -128,31 +132,30 @@ def move_vacuum(old_x, old_y, new_x, new_y):
     global vacuum_pos
 
     vacuum_pos = (new_x, new_y)
-    # Cập nhật giao diện người dùng
-    update_cell(old_x, old_y, visited_image)  # Đặt lại ô cũ thành nền
-    update_cell(new_x, new_y, vacuum_image)  # Đặt máy hút bụi vào ô mới
+    # Update the cell at the old position to the background image
+    update_cell(old_x, old_y, visited_image)
+    update_cell(new_x, new_y, vacuum_image)
 
 def clear_table():
     global table_frame
-    # Kiểm tra nếu table_frame đã được tạo, sau đó xóa các widget trong Frame
+    # Check if the table_frame has been created, then delete the widgets in the Frame
     if table_frame:
         for widget in table_frame.winfo_children():
             if widget != submit_button:
                 widget.destroy()
 
-def clean_grid(aaa):
+def clean_grid(algorithm_type):
     global vacuum_pos, num_rows, num_cols, result, table_frame, kt
     kt = 1
     dust_positions = [(i, j) for i in range(num_rows) for j in range(num_cols) if result['matrix'][i][j] == 2]
     num_speed = max(num_rows, num_cols)
     num_speed = num_speed ** 1.3
-    if(aaa == 1):
-        # Vòng lặp qua từng điểm bụi
+    if(algorithm_type == 1):
         for dust in dust_positions:
-            # Tính toán đường đi bằng A*
+            # Input the matrix, the start position, and the dust position
             vacuum_pos = result['start_position']
             path = find_path_to_closest_goal(result['matrix'], (vacuum_pos[0], vacuum_pos[1])  , dust_positions)
-            # Di chuyển qua từng bước trên đường đi
+            # Follow the path to clean the dust
             for step in path:
                 move_vacuum(vacuum_pos[0], vacuum_pos[1], step[0], step[1])
                 window.update()
@@ -160,19 +163,18 @@ def clean_grid(aaa):
                 if(kt == 0):
                     return None
 
-            # Dọn bụi tại vị trí hiện tại
+            # Clean the dust at the current position
             result['matrix'][dust[0]][dust[1]] = 0
             update_cell(dust[0], dust[1], visited_image)
-        # Cập nhật vị trí máy hút bụi cuối cùng
+        # Update the last vacuum position
         vacuum_pos = {'x': path[-1][1], 'y': path[-1][0]}
+        # Ensure the vacuum is at the last position
         move_vacuum(vacuum_pos['y'], vacuum_pos['x'], vacuum_pos['y'], vacuum_pos['x'])
-    elif(aaa == 2 or aaa == 3):
-        # Vòng lặp qua từng điểm bụi
+    elif(algorithm_type == 2 or algorithm_type == 3):
         vacuum_pos = result['start_position']
         path = []
         for dust in dust_positions:
-            #start_pos_tuple = tuple(vacuum_pos.values())
-            if(aaa == 2):
+            if(algorithm_type == 2):
                 path = initialize_bfs(result['matrix'], vacuum_pos  , dust)
                 print("result", result["matrix"])
                 print("vacuum_pos", vacuum_pos)
@@ -182,7 +184,6 @@ def clean_grid(aaa):
                 print("result", result["matrix"])
                 print("vacuum_pos", vacuum_pos)
                 print("path", path)
-            # Di chuyển qua từng bước trên đường đi
             for step in path:
                 move_vacuum(vacuum_pos[0], vacuum_pos[1], step[0], step[1])
                 window.update()
@@ -190,21 +191,18 @@ def clean_grid(aaa):
                 if(kt == 0):
                     return None
 
-            # Dọn bụi tại vị trí hiện tại
             result['matrix'][dust[0]][dust[1]] = 0
             update_cell(dust[0], dust[1], visited_image)
-        # Cập nhật vị trí máy hút bụi cuối cùng
         # vacuum_pos = (path[-1][0], path[-1][1])
         # print("vacuum_pos", vacuum_pos)
         vacuum_pos = {'x': path[-1][1], 'y': path[-1][0]}
         print("vacuum_pos BFS, DFS", vacuum_pos)
         move_vacuum(vacuum_pos['y'], vacuum_pos['x'], vacuum_pos['y'], vacuum_pos['x'])
     else:
-        if(aaa == 4):
+        if(algorithm_type == 4):
             path = initialize_bfs_full(result["matrix"], result["start_position"])
         else:
             path = initialize_dfs_full(result["matrix"], result["start_position"])
-        # Di chuyển qua từng bước trên đường đi
         for step in path:
             move_vacuum(vacuum_pos[0], vacuum_pos[1], step[0], step[1])
             window.update()
@@ -216,27 +214,22 @@ def clean_grid(aaa):
 
 def start_cleaning_A_star():
     print("Start Cleaning A")
-    # Bắt đầu quá trình dọn dẹp
     clean_grid(1)
 
 def start_cleaning_bfs():
     print("Start Cleaning bfs")
-    # Bắt đầu quá trình dọn dẹp
     clean_grid(2)
 
 def start_cleaning_dfs():
     print("Start Cleaning dfs")
-    # Bắt đầu quá trình dọn dẹp
     clean_grid(3)
 
 def start_cleaning_b():
     print("Start Cleaning BFS full")
-    # Bắt đầu quá trình dọn dẹp
     clean_grid(4)
 
 def start_cleaning_d():
     print("Start Cleaning DFS full")
-    # Bắt đầu quá trình dọn dẹp
     clean_grid(5)
 
 
@@ -244,19 +237,16 @@ def run_application():
     print("Start Application")
     global row_entry, column_entry, obstacle_entry, dust_entry, window, submit_button, kt
     kt = 0
-    # Tạo một cửa sổ giao diện
+    
     window = ctk.CTk()
     window.title("Thông tin")
 
 
     window1 = ctk.CTkFrame(window)
     window1.grid(row=0, column=0, columnspan=2, ipadx=30, padx = 20, sticky="nsew")
-    # Tạo một LabelFrame với tiêu đề "Nhập thông tin"
     info_frame = ctk.CTkLabel(window1, text="", font=("Arial", 12, "bold"))
-    # info_frame.pack(pady=20)
     info_frame.grid(row=0, column=1, pady = 20)
 
-    # Tạo các Label và Entry box
     label_font = CTkFont(family="Arial", size=14)
 
     column_label = ctk.CTkLabel(info_frame, text="Nhập số cột:", font=label_font)
@@ -278,27 +268,26 @@ def run_application():
     dust_row_label.grid(row=3, column=0, padx=10, pady=10, sticky="w")
     dust_entry = ctk.CTkEntry(info_frame, font=label_font)
     dust_entry.grid(row=3, column=1, padx=10, pady=10)
-    # Tạo nút "Submit"
+
     submit_button = ctk.CTkButton(window1, text="Submit", font= label_font, command=create_table)
     #submit_button.pack(pady=10)
     # Set the weight for each row and column that contains a widget
-    for i in range(12):  # Assuming you have 12 rows
+    for i in range(12):  # Assuming have 12 rows
         window1.grid_rowconfigure(i, weight=1)
-    for i in range(2):  # Assuming you have 2 columns
+    for i in range(2):  # Assuming have 2 columns
         window1.grid_columnconfigure(i, weight=1)
 
-    # Your existing code
-    submit_button.grid(row=6, column=0, columnspan=2, pady=10, sticky="nsew")
+    submit_button.grid(row=10, column=0, columnspan=2, pady=10, padx=10, sticky="nsew")
     start_cleaning_A_star_button = ctk.CTkButton(window1, text="Start Cleaning A*",command=start_cleaning_A_star, font=label_font)
-    start_cleaning_A_star_button.grid(row=7, column=0, columnspan=2, pady=10, sticky="nsew")
-    start_cleaning_bfs_button = ctk.CTkButton(window1, text="Start Cleaning bfs",command=start_cleaning_bfs, font=label_font)
-    start_cleaning_bfs_button.grid(row=8, column=0, columnspan=2, pady=10, sticky="nsew")
-    start_cleaning_dfs_button = ctk.CTkButton(window1, text="Start Cleaning dfs",command=start_cleaning_dfs, font=label_font)
-    start_cleaning_dfs_button.grid(row=9, column=0, columnspan=2, pady=10, sticky="nsew")
-    start_cleaning_b_button = ctk.CTkButton(window1, text="Start Cleaning BFS full",command=start_cleaning_b, font=label_font)
-    start_cleaning_b_button.grid(row=10, column=0, columnspan=2, pady=10, sticky="nsew")
-    start_cleaning_d_button = ctk.CTkButton(window1, text="Start Cleaning DFS full",command=start_cleaning_d, font=label_font)
-    start_cleaning_d_button.grid(row=11, column=0, columnspan=2, pady=10, sticky="nsew")
+    start_cleaning_A_star_button.grid(row=11, column=0, columnspan=2, pady=10, padx=10, sticky="nsew")
+    # start_cleaning_bfs_button = ctk.CTkButton(window1, text="Start Cleaning bfs",command=start_cleaning_bfs, font=label_font)
+    # start_cleaning_bfs_button.grid(row=8, column=0, columnspan=2, pady=10, padx=10, sticky="nsew")
+    # start_cleaning_dfs_button = ctk.CTkButton(window1, text="Start Cleaning dfs",command=start_cleaning_dfs, font=label_font)
+    # start_cleaning_dfs_button.grid(row=9, column=0, columnspan=2, pady=10, padx=10, sticky="nsew")
+    # start_cleaning_b_button = ctk.CTkButton(window1, text="Start Cleaning BFS full",command=start_cleaning_b, font=label_font)
+    # start_cleaning_b_button.grid(row=10, column=0, columnspan=2, pady=10, padx=10, sticky="nsew")
+    # start_cleaning_d_button = ctk.CTkButton(window1, text="Start Cleaning DFS full",command=start_cleaning_d, font=label_font)
+    # start_cleaning_d_button.grid(row=11, column=0, columnspan=2, pady=10, padx=10, sticky="nsew")
 
     window1.grid_rowconfigure(0, weight=1)
     window1.grid_rowconfigure(6, weight=1)
