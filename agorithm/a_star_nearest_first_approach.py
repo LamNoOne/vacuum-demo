@@ -9,60 +9,51 @@ def heuristic(a, b):
 
 
 def a_star_search(matrix, start, goal):
-    ## Thuật toán A* tìm đường đi ngắn nhất từ start đến goal
-    neighbors = [
-        (0, 1),
-        (1, 0),
-        (0, -1),
-        (-1, 0),
-    ]  # Các hướng di chuyển (phải,xuống,trái,trên)
-
+    # A* search algorithm to find the shortest path between two points
+    # # Define the possible movements: right, down, left, up
+    neighbors = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+    # Sets for closed nodes and nodes to be evaluated
     close_set = set()
-    came_from = {}
-    gscore = {start: 0}
-    print("heuristic: ", heuristic(start, goal))
-    fscore = {start: heuristic(start, goal)}
     oheap = []
-
-    print("start: ", start)
-    print("fscore: ", fscore[start])
-
+    # Dictionary to keep track of the path
+    came_from = {}
+    # Dictionaries to keep track of the cost from start and the total cost (start to goal)
+    gscore = {start: 0}
+    fscore = {start: heuristic(start, goal)}
+    # Push the starting node into the priority queue
     heapq.heappush(oheap, (fscore[start], start))
-
     while oheap:
         current = heapq.heappop(oheap)[1]
-        print("current in heap: ", current)
-
+        # If the goal is reached, reconstruct and return the path
         if current == goal:
             data = []
             while current in came_from:
                 data.append(current)
                 current = came_from[current]
+            # Return reversed path
             return data[::-1]
-
+        
         close_set.add(current)
+
         for i, j in neighbors:
             neighbor = current[0] + i, current[1] + j
-            print("neighbor: ", neighbor)
             tentative_g_score = gscore[current] + 1
-
+            # Check if the neighbor is within bounds and not an obstacle
             if 0 <= neighbor[0] < len(matrix) and 0 <= neighbor[1] < len(matrix[0]):
                 if matrix[neighbor[0]][neighbor[1]] == 1:
                     continue
             else:
-                # Nằm ngoài phạm vi bản đồ
                 continue
-
+            # If the neighbor is already in the closed set and has a higher gscore, skip it
             if neighbor in close_set and tentative_g_score >= gscore.get(neighbor, 0):
                 continue
-            
+            # If the neighbor is not in the open set or has a lower gscore, update the scores and path
             if tentative_g_score < gscore.get(neighbor, 0) or neighbor not in [i[1]for i in oheap]:
                 came_from[neighbor] = current
                 gscore[neighbor] = tentative_g_score
                 fscore[neighbor] = tentative_g_score + heuristic(neighbor, goal)
                 heapq.heappush(oheap, (fscore[neighbor], neighbor))
-
-    return False
+    return False # Return False if no path is found
 
 
 def find_closest_goal(current_position, goals):
@@ -96,13 +87,15 @@ def find_path_to_closest_goal(matrix, start, goals):
 
 # Usage example:
 
-# matrix = [[0, 0, 0, 0, 0],
-#           [0, 1, 1, 1, 0],
-#           [0, 0, 0, 0, 0],
-#           [0, 1, 1, 1, 0],
-#           [0, 0, 0, 0, 0]]
+matrix = [[0, 0, 0, 0, 0],
+          [0, 1, 1, 1, 0],
+          [0, 0, 0, 0, 0],
+          [0, 1, 1, 1, 0],
+          [0, 0, 0, 0, 0]]
 
-# start = (0, 0)
-# goals = [(4, 4), (2, 2), (4, 1)]
-# path_to_goals = find_path_to_closest_goal(matrix, start, goals)
-# print(path_to_goals)
+start = (0, 0)
+goals = [(4, 4), (2, 2), (4, 1)]
+path_to_goals = find_path_to_closest_goal(matrix, start, goals)
+
+#Result:
+#[(1, 0), (2, 0), (2, 1), (2, 2), (2, 1), (2, 0), (3, 0), (4, 0), (4, 1), (4, 2), (4, 3), (4, 4)]
