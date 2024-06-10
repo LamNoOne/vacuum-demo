@@ -51,7 +51,7 @@ def create_table():
     num_dust = dust_entry.get()
 
     if not num_rows or not num_cols or not num_obs or not num_dust:
-        messagebox.showerror("Thông báo lỗi", "Vui lòng nhập đủ thông tin hàng, cột, số lượng bụi và số lượng vật cản!")
+        messagebox.showerror("Error message", "Please enter complete row, column, dust quantity and obstacle quantity information!")
         return
     num_rows = int(num_rows)
     num_cols = int(num_cols)
@@ -74,7 +74,7 @@ def create_table():
     global size_image
     screen_height = window.winfo_screenheight()
     screen_width = window.winfo_screenwidth()
-    size_image = min(screen_height // num_rows, screen_width // num_cols) - num_rows * 2
+    size_image = min(screen_height // num_rows, screen_width  // num_cols) - 15
 
     vacuum_image = CTkImage(light_image=Image.open("image\\vacuum.png"), dark_image=Image.open("image\\vacuum.png"), size=(size_image, size_image))
     bg_image = CTkImage(light_image=Image.open("image\\dust.jpg"), dark_image=Image.open("image\\dust.jpg"), size=(size_image, size_image))
@@ -165,9 +165,10 @@ def clean_grid():
         if(kt == 0):
             return None
     # Update the last vacuum position
-    vacuum_pos = {'x': path[-1][0], 'y': path[-1][1]}
+    # vacuum_pos = {'x': path[-1][0], 'y': path[-1][1]}
+    # print("vacuum_pos", vacuum_pos)
     # Ensure the vacuum is at the last position
-    move_vacuum(vacuum_pos['x'], vacuum_pos['y'], vacuum_pos['x'], vacuum_pos['y'])
+    # move_vacuum(vacuum_pos['x'], vacuum_pos['y'], vacuum_pos['x'], vacuum_pos['y'])
 
 
 

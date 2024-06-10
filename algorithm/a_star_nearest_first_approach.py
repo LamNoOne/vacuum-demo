@@ -27,19 +27,14 @@ def a_star_search(matrix, start, goal):
     heapq.heappush(oheap, (fscore[start], start))
     while oheap:
         # Get the current coordinates from the priority queue
-        print("oheap", oheap)
         current = heapq.heappop(oheap)[1]
-        print("current", current)
-        print("oheap popped", oheap)
         # If the goal is reached, reconstruct and return the path
         if current == goal:
             data = []
             while current in came_from:
-                print("current in came_from", current)
                 data.append(current)
                 current = came_from[current]
             # Return reversed path
-            print("data", data)
             return data[::-1]
         
         close_set.add(current)
@@ -63,9 +58,8 @@ def a_star_search(matrix, start, goal):
             if neighbor in close_set and tentative_g_score >= gscore.get(neighbor, 0):
                 continue
             # If the neighbor is not in the open set or has a lower gscore, update the scores and path
-            if tentative_g_score < gscore.get(neighbor, 0) or neighbor not in [i[1] for i in oheap]:
+            if tentative_g_score < gscore.get(neighbor, 0) or neighbor not in [i[1]for i in oheap]:
                 came_from[neighbor] = current
-                print("came_from", came_from)
                 gscore[neighbor] = tentative_g_score
                 fscore[neighbor] = tentative_g_score + heuristic(neighbor, goal)
                 heapq.heappush(oheap, (fscore[neighbor], neighbor))
@@ -98,23 +92,39 @@ def find_path_to_closest_goal(matrix, start, goals):
         else:
             # If the path to the closest goal is not found, choose another goal
             goals.remove(closest_goal)
+    
     return path
 
 
 # Usage example:
 
-matrix = [[0, 0, 0, 0, 0, 0],
-          [0, 1, 0, 0, 0, 0],
-          [0, 0, 0, 0, 1, 0],
-          [0, 0, 0, 0, 1, 0],
-          [0, 0, 1, 1, 0, 0],
-          [0, 0, 0, 0, 0, 0]]
+# matrix = [[0, 0, 0, 0, 0, 0],
+#           [0, 1, 0, 0, 0, 0],
+#           [0, 0, 0, 0, 1, 0],
+#           [0, 0, 0, 0, 1, 0],
+#           [0, 0, 1, 1, 0, 0],
+#           [0, 0, 0, 0, 0, 0]]
 
-start = (2, 2)
-goals = [(0, 0), (0, 2), (2, 5), (5,3)]
-path_to_goals = find_path_to_closest_goal(matrix, start, goals)
+# start = (2, 2)
+# goals = [(0, 0), (0, 2), (2, 5), (5,3)]
+# path_to_goals = find_path_to_closest_goal(matrix, start, goals)
 
-print("Result:", path_to_goals)
+# print("Result:", path_to_goals)
 
 # Result:
-# [(1, 0), (2, 0), (2, 1), (2, 2), (2, 1), (2, 0), (3, 0), (4, 0), (4, 1), (4, 2), (4, 3), (4, 4)]
+# [(1, 2), (0, 2), (0, 1), (0, 0), (0, 1), (0, 2), (0, 3), (0, 4),
+# (0, 5), (1, 5), (2, 5), (3, 5), (4, 5), (4, 4), (5, 4), (5, 3)]
+
+
+# Disavantage of this approach is: It can be went to the same goal sometimes because it don't know the wall it going to hit
+# matrix = [[0, 0, 0, 0, 0],
+#           [1, 1, 0, 1, 0],
+#           [0, 0, 0, 1, 1],
+#           [0, 0, 1, 0, 1], 
+#           [0, 0, 0, 0, 0]]
+
+# start = (4, 0)
+# goals = [(0, 4), (1, 2), (1, 4), (3, 1), (4, 1), (4, 2), (4, 3), (4, 4)]
+# path_to_goals = find_path_to_closest_goal(matrix, start, goals)
+
+# print("Result:", path_to_goals)
