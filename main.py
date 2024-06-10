@@ -74,7 +74,7 @@ def create_table():
     global size_image
     screen_height = window.winfo_screenheight()
     screen_width = window.winfo_screenwidth()
-    size_image = min(screen_height // num_rows, screen_width // num_cols) - num_rows
+    size_image = min(screen_height // num_rows, screen_width // num_cols) - num_rows * 2
 
     vacuum_image = CTkImage(light_image=Image.open("image\\vacuum.png"), dark_image=Image.open("image\\vacuum.png"), size=(size_image, size_image))
     bg_image = CTkImage(light_image=Image.open("image\\dust.jpg"), dark_image=Image.open("image\\dust.jpg"), size=(size_image, size_image))
