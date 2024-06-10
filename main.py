@@ -33,6 +33,8 @@ def random_matrix (num_rows, num_cols,num_obs,num_dust):
     for pos in dust_and_vacuum_positions:
         arr[pos] = 2
 
+    print("arr", arr)
+
     start_position = [vacuum_position // num_cols , vacuum_position % num_cols]
 
     matrix = [arr[i * num_cols:(i + 1) * num_cols] for i in range(num_rows)]
@@ -61,6 +63,7 @@ def create_table():
     num_dust = int(num_dust)
 
     result = random_matrix(num_rows, num_cols, num_obs, num_dust)
+    print("result", result)
     obstacle_positions = {(i, j) for i in range(num_rows) for j in range(num_cols) if result['matrix'][i][j] == 1}
     dust_positions = {(i, j) for i in range(num_rows) for j in range(num_cols) if result['matrix'][i][j] == 2}
     # Get the vacuum position
@@ -126,6 +129,8 @@ def update_vacuum_position(new_row, new_col):
     update_cell( result['start_position'][0], result['start_position'][1], bg_image)
     result['start_position'][0] = new_row
     result['start_position'][1] = new_col
+    # update the value of clean cell
+    result['matrix'][new_row][new_col] = 0
     update_cell( result['start_position'][0], result['start_position'][1], vacuum_image)
 
 def move_vacuum(old_x, old_y, new_x, new_y):
@@ -155,6 +160,7 @@ def clean_grid(algorithm_type):
             # Input the matrix, the start position, and the dust position
             vacuum_pos = result['start_position']
             path = find_path_to_closest_goal(result['matrix'], (vacuum_pos[0], vacuum_pos[1])  , dust_positions)
+            print("path", path)
             # Follow the path to clean the dust
             for step in path:
                 move_vacuum(vacuum_pos[0], vacuum_pos[1], step[0], step[1])
@@ -167,9 +173,9 @@ def clean_grid(algorithm_type):
             result['matrix'][dust[0]][dust[1]] = 0
             update_cell(dust[0], dust[1], visited_image)
         # Update the last vacuum position
-        vacuum_pos = {'x': path[-1][1], 'y': path[-1][0]}
+        vacuum_pos = {'x': path[-1][0], 'y': path[-1][1]}
         # Ensure the vacuum is at the last position
-        move_vacuum(vacuum_pos['y'], vacuum_pos['x'], vacuum_pos['y'], vacuum_pos['x'])
+        move_vacuum(vacuum_pos['x'], vacuum_pos['y'], vacuum_pos['x'], vacuum_pos['y'])
     elif(algorithm_type == 2 or algorithm_type == 3):
         vacuum_pos = result['start_position']
         path = []
