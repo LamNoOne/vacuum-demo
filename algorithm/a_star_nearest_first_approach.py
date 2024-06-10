@@ -87,15 +87,15 @@ def find_path_to_closest_goal(matrix, start, goals):
 
 # Usage example:
 
-matrix = [[0, 0, 0, 0, 0],
-          [0, 1, 1, 1, 0],
-          [0, 0, 0, 0, 0],
-          [0, 1, 1, 1, 0],
-          [0, 0, 0, 0, 0]]
+# matrix = [[0, 0, 0, 0, 0],
+#           [0, 1, 1, 1, 0],
+#           [0, 0, 0, 0, 0],
+#           [0, 1, 1, 1, 0],
+#           [0, 0, 0, 0, 0]]
 
-start = (0, 0)
-goals = [(4, 4), (2, 2), (4, 1)]
-path_to_goals = find_path_to_closest_goal(matrix, start, goals)
+# start = (0, 0)
+# goals = [(4, 4), (2, 2), (4, 1)]
+# path_to_goals = find_path_to_closest_goal(matrix, start, goals)
 
 #Result:
 #[(1, 0), (2, 0), (2, 1), (2, 2), (2, 1), (2, 0), (3, 0), (4, 0), (4, 1), (4, 2), (4, 3), (4, 4)]

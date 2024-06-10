@@ -6,11 +6,7 @@ from customtkinter import CTkImage
 from collections import deque
 import random
 import time
-from agorithm.a_star_nearest_first_approach import *
-from agorithm.bfs import *
-from agorithm.bfs_full import *
-from agorithm.dfs import *
-from agorithm.dfs_full import *
+from algorithm.a_star_nearest_first_approach import *
 # Global variables to store frame table container, vacuum position, dust positions, and the result matrix
 result = None
 dust_positon = None
@@ -149,94 +145,35 @@ def clear_table():
             if widget != submit_button:
                 widget.destroy()
 
-def clean_grid(algorithm_type):
+def clean_grid():
     global vacuum_pos, num_rows, num_cols, result, table_frame, kt
     kt = 1
     dust_positions = [(i, j) for i in range(num_rows) for j in range(num_cols) if result['matrix'][i][j] == 2]
+    print("dust_positions", dust_positions)
+
     num_speed = max(num_rows, num_cols)
     num_speed = num_speed ** 1.3
-    if(algorithm_type == 1):
-        for dust in dust_positions:
-            # Input the matrix, the start position, and the dust position
-            vacuum_pos = result['start_position']
-            path = find_path_to_closest_goal(result['matrix'], (vacuum_pos[0], vacuum_pos[1])  , dust_positions)
-            print("path", path)
-            # Follow the path to clean the dust
-            for step in path:
-                move_vacuum(vacuum_pos[0], vacuum_pos[1], step[0], step[1])
-                window.update()
-                time.sleep(2 / num_speed)
-                if(kt == 0):
-                    return None
 
-            # Clean the dust at the current position
-            result['matrix'][dust[0]][dust[1]] = 0
-            update_cell(dust[0], dust[1], visited_image)
-        # Update the last vacuum position
-        vacuum_pos = {'x': path[-1][0], 'y': path[-1][1]}
-        # Ensure the vacuum is at the last position
-        move_vacuum(vacuum_pos['x'], vacuum_pos['y'], vacuum_pos['x'], vacuum_pos['y'])
-    elif(algorithm_type == 2 or algorithm_type == 3):
-        vacuum_pos = result['start_position']
-        path = []
-        for dust in dust_positions:
-            if(algorithm_type == 2):
-                path = initialize_bfs(result['matrix'], vacuum_pos  , dust)
-                print("result", result["matrix"])
-                print("vacuum_pos", vacuum_pos)
-                print("path", path)
-            else:
-                path = initialize_dfs(result['matrix'], vacuum_pos  , dust)
-                print("result", result["matrix"])
-                print("vacuum_pos", vacuum_pos)
-                print("path", path)
-            for step in path:
-                move_vacuum(vacuum_pos[0], vacuum_pos[1], step[0], step[1])
-                window.update()
-                time.sleep(2 / num_speed)
-                if(kt == 0):
-                    return None
-
-            result['matrix'][dust[0]][dust[1]] = 0
-            update_cell(dust[0], dust[1], visited_image)
-        # vacuum_pos = (path[-1][0], path[-1][1])
-        # print("vacuum_pos", vacuum_pos)
-        vacuum_pos = {'x': path[-1][1], 'y': path[-1][0]}
-        print("vacuum_pos BFS, DFS", vacuum_pos)
-        move_vacuum(vacuum_pos['y'], vacuum_pos['x'], vacuum_pos['y'], vacuum_pos['x'])
-    else:
-        if(algorithm_type == 4):
-            path = initialize_bfs_full(result["matrix"], result["start_position"])
-        else:
-            path = initialize_dfs_full(result["matrix"], result["start_position"])
-        for step in path:
-            move_vacuum(vacuum_pos[0], vacuum_pos[1], step[0], step[1])
-            window.update()
-            time.sleep(0.7 / num_speed)
-            if(kt == 0):
-                return None
+    vacuum_pos = result['start_position']
+    path = find_path_to_closest_goal(result['matrix'], (vacuum_pos[0], vacuum_pos[1])  , dust_positions)
+    print("path", path)
+    # Follow the path to clean the dust
+    for step in path:
+        move_vacuum(vacuum_pos[0], vacuum_pos[1], step[0], step[1])
+        window.update()
+        time.sleep(2 / num_speed)
+        if(kt == 0):
+            return None
+    # Update the last vacuum position
+    vacuum_pos = {'x': path[-1][0], 'y': path[-1][1]}
+    # Ensure the vacuum is at the last position
+    move_vacuum(vacuum_pos['x'], vacuum_pos['y'], vacuum_pos['x'], vacuum_pos['y'])
 
 
 
 def start_cleaning_A_star():
     print("Start Cleaning A")
-    clean_grid(1)
-
-def start_cleaning_bfs():
-    print("Start Cleaning bfs")
-    clean_grid(2)
-
-def start_cleaning_dfs():
-    print("Start Cleaning dfs")
-    clean_grid(3)
-
-def start_cleaning_b():
-    print("Start Cleaning BFS full")
-    clean_grid(4)
-
-def start_cleaning_d():
-    print("Start Cleaning DFS full")
-    clean_grid(5)
+    clean_grid()
 
 
 def run_application():
@@ -283,17 +220,9 @@ def run_application():
     for i in range(2):  # Assuming have 2 columns
         window1.grid_columnconfigure(i, weight=1)
 
-    submit_button.grid(row=6, column=0, columnspan=2, pady=10, padx=10, sticky="nsew")
+    submit_button.grid(row=10, column=0, columnspan=2, pady=10, padx=10, sticky="nsew")
     start_cleaning_A_star_button = ctk.CTkButton(window1, text="Start Cleaning A*",command=start_cleaning_A_star, font=label_font)
-    start_cleaning_A_star_button.grid(row=7, column=0, columnspan=2, pady=10, padx=10, sticky="nsew")
-    start_cleaning_bfs_button = ctk.CTkButton(window1, text="Start Cleaning bfs",command=start_cleaning_bfs, font=label_font)
-    start_cleaning_bfs_button.grid(row=8, column=0, columnspan=2, pady=10, padx=10, sticky="nsew")
-    start_cleaning_dfs_button = ctk.CTkButton(window1, text="Start Cleaning dfs",command=start_cleaning_dfs, font=label_font)
-    start_cleaning_dfs_button.grid(row=9, column=0, columnspan=2, pady=10, padx=10, sticky="nsew")
-    start_cleaning_b_button = ctk.CTkButton(window1, text="Start Cleaning BFS full",command=start_cleaning_b, font=label_font)
-    start_cleaning_b_button.grid(row=10, column=0, columnspan=2, pady=10, padx=10, sticky="nsew")
-    start_cleaning_d_button = ctk.CTkButton(window1, text="Start Cleaning DFS full",command=start_cleaning_d, font=label_font)
-    start_cleaning_d_button.grid(row=11, column=0, columnspan=2, pady=10, padx=10, sticky="nsew")
+    start_cleaning_A_star_button.grid(row=11, column=0, columnspan=2, pady=10, padx=10, sticky="nsew")
 
     window1.grid_rowconfigure(0, weight=1)
     window1.grid_rowconfigure(6, weight=1)
